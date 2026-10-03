@@ -12,4 +12,4 @@ This is my personal repository created to record my progress in machine learning
 ## 项目进度记录
 - [2026-10-02] 泰坦尼克号（Seaborn 简化版）：准确率 0.82
 - [2026-10-03] 泰坦尼克号（Kaggle 原版）：准确率 0.79425，使用了网格搜索与集成学习
-   -> [点击查看原版项目代码](Titanic-Kaggle-Original/Titanic_Prediction.ipynb)
+   -> [点击查看原版项目代码]（https://github.com/SHUS-Pangloss-R/Rankross/blob/main/Titanic_Kaggle_Original/Advanced%20Titanic%20problem%20on%20the%20real%20dataset%20from%20kaggle.ipynb）
