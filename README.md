@@ -1,15 +1,17 @@
-# Rankross
-This is my personal repository created to record my progress in machine learning
-#2026.10.2
-泰坦尼克生存率预测
-使用Python&&Scikit-learn完成。
-##方法
-1；数据清洗：填补缺失值（此处我选择用均值），将性别转化成数字
-2；特征工程：构造了（family_size，who(即为人特征：孩童，性别等)）以求得更优解
-3；模型：随机森林（10树，5深）
-4：结论：森林表现更优秀，0.82
-####文件说明：题目中含有tatanic的ipynb文件中包含完整数据处理与模型训练代码
-## 项目进度记录
-- [2026-10-02] 泰坦尼克号（Seaborn 简化版）：准确率 0.82
-- [2026-10-03] 泰坦尼克号（Kaggle 原版）：准确率 0.79425，使用了网格搜索与集成学习
-   -> [点击查看原版项目代码]（https://github.com/SHUS-Pangloss-R/Rankross/blob/main/Titanic_Kaggle_Original/Advanced%20Titanic%20problem%20on%20the%20real%20dataset%20from%20kaggle.ipynb）
+# Rankross - Machine Learning Journey
+
+This is my personal repository to document my learning progress and hands-on projects in Machine Learning.
+
+##  Projects
+- **[Titanic Survival Prediction](Titanic_Kaggle_Original/README.md)**: An end-to-end ML project based on the original Kaggle dataset.
+
+---
+
+##  Progress Log
+
+| Date | Project | Key Tasks | Local CV Score | Kaggle Score |
+| :--- | :--- | :--- | :--- | :--- |
+| 2026-10-02 | Titanic (Seaborn Version) | Logistic Regression vs. Random Forest, Feature Engineering | 0.8200 | - |
+| 2026-10-03 | Titanic (Kaggle Original) | GridSearchCV, VotingClassifier (Soft Voting) | 0.8384 | 0.79425 |
+
+> *Note: The local cross-validation score is often slightly higher than the Kaggle leaderboard score, as the test set may contain out-of-distribution samples.*
