@@ -19,3 +19,5 @@ An end-to-end machine learning pipeline to predict passenger survival on the Tit
 ##  File Descriptions
 - `Advanced Titanic problem...ipynb`: Complete code for data processing and model training.
 - `submission_voting_tuned.csv`: Final submission file for the Kaggle competition.
+- `code predicting....... on logistic regression`:My privious try on a simpler dataset.
+- `code predicting....... on random forest classifier`:Another stupid try.
