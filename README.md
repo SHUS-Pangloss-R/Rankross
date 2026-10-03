@@ -9,3 +9,7 @@ This is my personal repository created to record my progress in machine learning
 3；模型：随机森林（10树，5深）
 4：结论：森林表现更优秀，0.82
 ####文件说明：题目中含有tatanic的ipynb文件中包含完整数据处理与模型训练代码
+## 项目进度记录
+- [2026-10-02] 泰坦尼克号（Seaborn 简化版）：准确率 0.82
+- [2026-10-03] 泰坦尼克号（Kaggle 原版）：准确率 0.79425，使用了网格搜索与集成学习
+   -> [点击查看原版项目代码](Titanic-Kaggle-Original/Titanic_Prediction.ipynb)
