@@ -4,7 +4,7 @@ This is my personal repository to document my learning progress and hands-on pro
 
 ##  Projects
 - **[Titanic Survival Prediction](Titanic_Kaggle_Original/README.md)**: An end-to-end ML project based on the original Kaggle dataset.
-- **[Pytorch](PytorchPractice/Linear_Regression_GPU.ipynb)**: An journal of my journey to master pytorch
+- **[Pytorch](https://github.com/SHUS-Pangloss-R/Rankross/blob/main/Pytorch%20Practice/Linear_Regression_GPU.ipynb)**: An journal of my journey to master pytorch
 ---
 
 ##  Progress Log
