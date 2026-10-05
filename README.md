@@ -5,7 +5,7 @@ This is my personal repository to document my learning progress and hands-on pro
 ##  Projects
 - **[Titanic Survival Prediction](Titanic_Kaggle_Original/README.md)**: An end-to-end ML project based on the original Kaggle dataset.
 - **[Pytorch](https://github.com/SHUS-Pangloss-R/Rankross/blob/main/Pytorch%20Practice/Linear_Regression_GPU.ipynb)**: An journal of my journey to master pytorch
-_ **[PointCloud_Practice](./PointCloud_Practice/)** - From_scratch implementation of a PointNet architecture on synthetic 3D data.
+- **[PointCloud_Practice](./PointCloud_Practice/)** - From_scratch implementation of a PointNet architecture on synthetic 3D data.
 
 ##  Progress Log
 
