@@ -29,4 +29,3 @@ The model converges extremely quickly and achieves **1.0000 (100%) accuracy** on
 
 ##  File Descriptions
 - `MiniPointNet_Classification.ipynb`: Complete Jupyter Notebook covering synthetic data generation, network definition, training loop, and evaluation.
-##  Experiment Log: Impact of Data Distribution on Training Stability
