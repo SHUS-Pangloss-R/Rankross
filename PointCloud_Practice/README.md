@@ -46,3 +46,20 @@ The raw point cloud (potentially hundreds of thousands of points) was cleaned an
 
 ###  File Descriptions
 - `PointCloud_Geometry_Processing.ipynb`: Code for statistical outlier removal, voxel downsampling, and height-based coloring.
+## 🟢 Real 3D Point Cloud Classification & Overfitting Analysis
+
+###  Overview
+Transitioned from synthetic 3D tensors to real 3D mesh data. Implemented a standard PyTorch `Dataset` and `DataLoader` to sample point clouds from Open3D's built-in meshes (Bunny, Armadillo, Knot). Trained a `MiniPointNet` for a 3-class classification task.
+
+###  Critical Finding: Overfitting & Generalization Failure
+- **Dataset Limitation**: The dataset consists of 300 samples generated from only 3 identical meshes (100 samples per mesh). 
+- **Result**: The model achieved **100% test accuracy** within 10 epochs.
+- **Insight**: This is a classic case of **overfitting**. The model is memorizing the specific spatial point distribution of these three specific meshes, rather than learning generalizable geometric features.
+- **Verification**: A rotation test was conducted (e.g., rotating the test point cloud by 90 degrees). The model failed to recognize the rotated object, confirming that the network lacks spatial invariance and relies heavily on absolute coordinate positions.
+
+###  Future Improvements
+1. **Data Augmentation**: Implement random rotations, scaling, and translations in the `Dataset.__getitem__` method to force the network to learn shape features rather than coordinates.
+2. **Diverse Dataset**: Transition from this toy dataset to real-world benchmarks like **ModelNet40** or **ShapeNet** to properly evaluate generalization.
+
+###  File Descriptions
+- `Real_PointCloud_Classification.ipynb`: Code for real mesh sampling, PyTorch Dataset/DataLoader implementation, and model training.
