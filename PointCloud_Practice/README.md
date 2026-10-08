@@ -63,3 +63,32 @@ Transitioned from synthetic 3D tensors to real 3D mesh data. Implemented a stand
 
 ###  File Descriptions
 - `Real_PointCloud_Classification.ipynb`: Code for real mesh sampling, PyTorch Dataset/DataLoader implementation, and model training.
+##  Advanced ModelNet10 Classification & Engineering Optimization
+
+###  Overview
+This project scales up from toy data to the real-world **ModelNet10 dataset** (10 classes, ~4000 CAD models). Implemented a robust PyTorch pipeline to read `.off` mesh files, sample point clouds, apply data augmentation, and train a `MiniPointNet`. 
+
+Through extensive experimentation, this project addressed several critical deep learning engineering bottlenecks, achieving a stable **90.00% test accuracy**.
+
+###  Engineering Bottlenecks & Solutions
+1. **I/O Bottleneck (Disk vs. GPU)**:
+   - *Problem*: Reading `.off` files on-the-fly during `__getitem__` caused severe CPU/GPU underutilization.
+   - *Solution*: Pre-processed the entire dataset into cached `.pt` tensor files (offline preprocessing), eliminating disk I/O overhead during training.
+2. **Training Instability (Gradient Explosion)**:
+   - *Problem*: Increasing `Batch Size` to 512 and `lr` to 0.01 caused the loss to spike to 6.92 in the later stages of training.
+   - *Solution*: Applied **Gradient Clipping** (`max_norm=1.0`) and a **Step Learning Rate Scheduler** (`gamma=0.9`) to stabilize convergence.
+3. **Early Stopping Mechanism**:
+   - *Implementation*: Monitored training loss with `patience=20` and `min_delta=1e-4`. 
+   - *Result*: Training automatically stopped at **Epoch 266 / 100,000**, restoring the best weights and preventing overfitting.
+
+### Final Optimal Configuration
+- **Batch Size**: 512
+- **Initial LR**: 0.01 (with `StepLR` decay gamma=0.9)
+- **Optimizer**: Adam
+- **Gradient Clipping**: `max_norm=1.0`
+- **Final Result**: 
+  - **Best Training Loss**: 0.1684
+  - **Test Accuracy**: **90.20%**
+
+### File Descriptions
+- `ModelNet10_Classification_Optimized.ipynb`: Complete pipeline including offline caching, augmented Dataset, model definition, hyperparameter tuning, and early stopping.
