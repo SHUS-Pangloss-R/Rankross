@@ -26,11 +26,8 @@ The model converges extremely quickly and achieves **1.0000 (100%) accuracy** on
 - PyTorch (Nightly build for CUDA support)
 - Scikit-learn (for train/test split)
 - Matplotlib (for loss curve visualization)
-
-##  File Descriptions
-- `MiniPointNet_Classification.ipynb`: Complete Jupyter Notebook covering synthetic data generation, network definition, training loop, and evaluation.
-
-- ##  2.Geometric Processing & Visualization Basics
+  
+## 2.PointCloud_Geometry_Processing
 
 ###  Overview
 Before diving into deep neural networks, it's crucial to understand how to manipulate raw 3D data. This notebook covers fundamental point cloud processing techniques using Open3D.
@@ -44,9 +41,7 @@ Before diving into deep neural networks, it's crucial to understand how to manip
 ###  Results
 The raw point cloud (potentially hundreds of thousands of points) was cleaned and downsampled to a few thousand points. The final visualization shows a smooth, noise-free point cloud colored by elevation, making it much easier to inspect the geometry visually.
 
-###  File Descriptions
-- `PointCloud_Geometry_Processing.ipynb`: Code for statistical outlier removal, voxel downsampling, and height-based coloring.
-## 🟢 Real 3D Point Cloud Classification & Overfitting Analysis
+## 3.Real 3D Point Cloud Classification & Overfitting Analysis
 
 ###  Overview
 Transitioned from synthetic 3D tensors to real 3D mesh data. Implemented a standard PyTorch `Dataset` and `DataLoader` to sample point clouds from Open3D's built-in meshes (Bunny, Armadillo, Knot). Trained a `MiniPointNet` for a 3-class classification task.
@@ -61,9 +56,8 @@ Transitioned from synthetic 3D tensors to real 3D mesh data. Implemented a stand
 1. **Data Augmentation**: Implement random rotations, scaling, and translations in the `Dataset.__getitem__` method to force the network to learn shape features rather than coordinates.
 2. **Diverse Dataset**: Transition from this toy dataset to real-world benchmarks like **ModelNet40** or **ShapeNet** to properly evaluate generalization.
 
-###  File Descriptions
-- `Real_PointCloud_Classification.ipynb`: Code for real mesh sampling, PyTorch Dataset/DataLoader implementation, and model training.
-##  Advanced ModelNet10 Classification & Engineering Optimization
+  
+##  4.Advanced ModelNet10 Classification & Engineering Optimization
 
 ###  Overview
 This project scales up from toy data to the real-world **ModelNet10 dataset** (10 classes, ~4000 CAD models). Implemented a robust PyTorch pipeline to read `.off` mesh files, sample point clouds, apply data augmentation, and train a `MiniPointNet`. 
@@ -91,4 +85,7 @@ Through extensive experimentation, this project addressed several critical deep 
   - **Test Accuracy**: **90.20%**
 
 ### File Descriptions
+- `MiniPointNet_Classification.ipynb`: Complete Jupyter Notebook covering synthetic data generation, network definition, training loop, and evaluation.
+- `PointCloud_Geometry_Processing.ipynb`: Code for statistical outlier removal, voxel downsampling, and height-based coloring.
+- `Real_PointCloud_Classification.ipynb`: Code for real mesh sampling, PyTorch Dataset/DataLoader implementation, and model training.
 - `ModelNet10_Classification_Optimized.ipynb`: Complete pipeline including offline caching, augmented Dataset, model definition, hyperparameter tuning, and early stopping.
