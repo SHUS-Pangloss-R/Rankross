@@ -84,7 +84,7 @@ Through extensive experimentation, this project addressed several critical deep 
   - **Best Training Loss**: 0.1684
   - **Test Accuracy**: **90.20%**
 
-### File Descriptions
+# File Descriptions
 - `MiniPointNet_Classification.ipynb`: Complete Jupyter Notebook covering synthetic data generation, network definition, training loop, and evaluation.
 - `PointCloud_Geometry_Processing.ipynb`: Code for statistical outlier removal, voxel downsampling, and height-based coloring.
 - `Real_PointCloud_Classification.ipynb`: Code for real mesh sampling, PyTorch Dataset/DataLoader implementation, and model training.
