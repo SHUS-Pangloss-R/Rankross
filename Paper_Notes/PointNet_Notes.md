@@ -8,9 +8,9 @@
 ##  Core Idea of PointNet
 The fundamental challenge of processing 3D point clouds is their **unordered nature (permutation invariance)**. 
 The key idea to solve this is: 
-- **1.sort input into a canonical order(hard to do so in higher dimensions)
-- **2.treat the input as a sequence to train an RNN, but augment the training data by all kinds of permutations(The fact is :Order does matter,and it’s hard to scale to thousands of input elements,which is common)
-- **3.approximate a general function defined ona point set by applying a symmetric function on transformed elements in the set(what the paper do)
+- 1.sort input into a canonical order(hard to do so in higher dimensions)
+- 2.treat the input as a sequence to train an RNN, but augment the training data by all kinds of permutations(The fact is :Order does matter,and it’s hard to scale to thousands of input elements,which is common)
+- 3.approximate a general function defined ona point set by applying a symmetric function on transformed elements in the set(what the paper do)
 > *"Apply a symmetric function on transformed elements in the set."*
 
 ### 📐 Key Equation
