@@ -1,0 +1,6 @@
+﻿__pycache__/
+*.pyc
+.ipynb_checkpoints/
+Cup_Practice/model/
+Cup_Practice/synthetic/
+Cup_Practice/shots2/
