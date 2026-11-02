@@ -3,6 +3,7 @@
 This is my personal repository to document my learning progress and hands-on projects in Machine Learning.
 
 ##  Projects
+- **[Learning Path](./ROADMAP.md)**: The trajectory so far and the next tasks, with acceptance numbers.
 - **[Titanic Survival Prediction](Titanic_Kaggle_Original/README.md)**: An end-to-end ML project based on the original Kaggle dataset.
 - **[Pytorch](https://github.com/SHUS-Pangloss-R/Rankross/blob/main/Pytorch%20Practice/Linear_Regression_GPU.ipynb)**: An journal of my journey to master pytorch
 - **[PointCloud_Practice](./PointCloud_Practice/)** - From_scratch implementation of a PointNet architecture on synthetic 3D data.
