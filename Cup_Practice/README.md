@@ -92,7 +92,3 @@ The honest evaluation is therefore two-fold:
 
 1. **Reconstruction accuracy**: does the photo pipeline reproduce the ruler and the water jug? Reported in mm and ml, cross-checked by density.
 2. **Learned invariance**: does the model still segment the cup after a rotation the training set never saw? Reported as an accuracy drop, with and without augmentation.
-
-##  工具说明
-
-Day 1-3 的流水线代码与 AI 协作完成，每一条结论均由本人在自己拍的数据上复现验证（见各 LOG 与 report）。T0、T1 为本人独立实现。
