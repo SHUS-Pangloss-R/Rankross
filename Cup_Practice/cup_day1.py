@@ -1,30 +1,4 @@
-#!/usr/bin/env python
-"""
-Cup_Practice - Day 1 closed loop.
 
-photo -> silhouette -> profile r(z) -> exterior volume -> density sanity check
-
-The whole point of Day 1 is ONE number: does material density land in a
-physically plausible range?  If yes, then the silhouette, the absolute scale
-and the water measurement are all simultaneously correct.
-
-Usage
------
-    python cup_day1.py ^
-        --img cup_side.jpg ^
-        --background bg.jpg ^
-        --ref-img a4.jpg --ref-mm 297 ^
-        --height 95 --rim 85 --base 60 --capacity 280 --mass 285
-
-Everything after --capacity/--mass is optional; missing values are simply
-reported as "not checked" instead of failing.
-
-Outputs (next to the image, or in --out-dir):
-    day1_report.json     all numbers + pass/fail
-    mask.png             the extracted silhouette
-    overlay.png          silhouette contour + fitted profile drawn on the photo
-    profile.png          r(z) plot with the fit
-"""
 from __future__ import annotations
 
 import argparse
@@ -43,17 +17,12 @@ except ImportError:
         f"  fix: {sys.executable} -m pip install opencv-python"
     )
 
-
-# --------------------------------------------------------------------------
-# I/O helpers (Windows-safe unicode paths)
-# --------------------------------------------------------------------------
 def imread_u(path: str | Path) -> np.ndarray:
     data = np.fromfile(str(path), dtype=np.uint8)
     img = cv2.imdecode(data, cv2.IMREAD_COLOR)
     if img is None:
         raise SystemExit(f"cannot read image: {path}")
     return img
-
 
 def imwrite_u(path: str | Path, img: np.ndarray) -> None:
     ext = "." + str(path).rsplit(".", 1)[-1]
@@ -62,14 +31,7 @@ def imwrite_u(path: str | Path, img: np.ndarray) -> None:
         raise SystemExit(f"cannot encode image: {path}")
     buf.tofile(str(path))
 
-
-# --------------------------------------------------------------------------
-# Segmentation
-# --------------------------------------------------------------------------
 def _largest_valid_component(mask: np.ndarray) -> np.ndarray:
-    """Keep the most plausible object component, preferring ones not touching
-    the image border (an object that touches the border is usually background
-    or a shadow merging with the frame)."""
     n, labels, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=8)
     if n <= 1:
         return np.zeros_like(mask)
@@ -93,10 +55,7 @@ def _largest_valid_component(mask: np.ndarray) -> np.ndarray:
         return np.zeros_like(mask)
     return np.where(labels == best, 255, 0).astype(np.uint8)
 
-
 def build_mask(img: np.ndarray, background: np.ndarray | None) -> np.ndarray:
-    """Extract the object silhouette. Uses background subtraction when a clean
-    background frame is available, otherwise tries both Otsu polarities."""
     g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     g = cv2.GaussianBlur(g, (5, 5), 0)
 
@@ -107,8 +66,7 @@ def build_mask(img: np.ndarray, background: np.ndarray | None) -> np.ndarray:
             b = cv2.resize(b, (g.shape[1], g.shape[0]))
         diff = cv2.absdiff(g, b)
         _, m = cv2.threshold(diff, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        # Close small holes, but do NOT use a large OPEN: it erodes the object
-        # edge by several pixels, which shows up directly as a diameter error.
+
         m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, np.ones((5, 5), np.uint8))
         m = cv2.morphologyEx(m, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
         return _largest_valid_component(m)
@@ -125,18 +83,13 @@ def build_mask(img: np.ndarray, background: np.ndarray | None) -> np.ndarray:
             continue
         h = ys.max() - ys.min() + 1
         w = xs.max() - xs.min() + 1
-        # a cup is taller than (or similar to) its width
+
         score = float(len(ys)) * (1.0 + 0.5 * min(h / max(w, 1), 2.0))
         if score > best_score:
             best, best_score = c, score
     return best if best is not None else np.zeros_like(g)
 
-
-# --------------------------------------------------------------------------
-# Silhouette -> profile
-# --------------------------------------------------------------------------
 def profile_from_mask(mask: np.ndarray):
-    """Return (rows, left, right) for every scanline that contains the object."""
     rows, left, right = [], [], []
     H, W = mask.shape
     for y in range(H):
@@ -150,15 +103,7 @@ def profile_from_mask(mask: np.ndarray):
         raise SystemExit("empty mask: nothing detected. Check background contrast.")
     return np.array(rows), np.array(left), np.array(right)
 
-
 def mask_to_profile_mm(rows, left, right, mm_per_px: float, median_w: int = 5):
-    """Convert pixel edges to a metric profile r(z).
-
-    z is measured upward from the cup's base; r is the half width.
-
-    NOTE on (rows, left, right) ordering: rows ascend downward in image space,
-    so z = (y_bottom - y) * mm_per_px makes z grow upward.
-    """
     z = (rows.max() - rows).astype(np.float64) * mm_per_px
     r = (right - left).astype(np.float64) * 0.5 * mm_per_px
 
@@ -169,20 +114,13 @@ def mask_to_profile_mm(rows, left, right, mm_per_px: float, median_w: int = 5):
     order = np.argsort(z)
     return z[order], r[order]
 
-
-# --------------------------------------------------------------------------
-# Fits
-# --------------------------------------------------------------------------
 def fit_frustum(z, r):
-    """r(z) = a z + b, least squares. Returns (a, b, rms)."""
     A = np.vstack([z, np.ones_like(z)]).T
     coef, *_ = np.linalg.lstsq(A, r, rcond=None)
     pred = A @ coef
     return float(coef[0]), float(coef[1]), float(np.sqrt(np.mean((pred - r) ** 2)))
 
-
 def fit_spline(z, r, smoothing: float | None = None):
-    """Clamped cubic spline through (z, r). Returns (callable, rms)."""
     from scipy.interpolate import UnivariateSpline
 
     if smoothing is None:
@@ -190,14 +128,7 @@ def fit_spline(z, r, smoothing: float | None = None):
     spl = UnivariateSpline(z, r, k=3, s=smoothing)
     return spl, float(np.sqrt(np.mean((spl(z) - r) ** 2)))
 
-
 def volume_of_revolution(z, r) -> float:
-    """V = pi * integral r(z)^2 dz, in ml. Inputs in mm.
-
-    z and r must be the same length (r already evaluated at z). Integrating the
-    raw profile directly would underestimate the taper, so callers pass a fine
-    grid sampled from the fitted curve.
-    """
     z = np.asarray(z, dtype=np.float64)
     r = np.asarray(r, dtype=np.float64)
     if z.shape != r.shape:
@@ -206,23 +137,10 @@ def volume_of_revolution(z, r) -> float:
     z, r = z[order], r[order]
     return float(np.pi * np.trapezoid(r ** 2, z) / 1000.0)
 
-
-# --------------------------------------------------------------------------
-# Absolute scale
-# --------------------------------------------------------------------------
-CARD_ASPECT = 85.6 / 53.98          # ISO/IEC 7810 ID-1, long / short
-
+CARD_ASPECT = 85.6 / 53.98
 
 def detect_card(img: np.ndarray, aspect: float = CARD_ASPECT,
                 tol: float = 0.22) -> tuple[float, float, np.ndarray] | None:
-    """Find an ID-1 card by its known 1.586 aspect ratio.
-
-    The dorm background is a chair, shelves and cardboard boxes, so brightness
-    alone cannot isolate the card. The aspect ratio can: a 4-sided contour whose
-    long/short sides land near 1.586 is almost certainly the card.
-
-    Returns (long_side_px, short_side_px, quad) or None.
-    """
     g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     g = cv2.GaussianBlur(g, (5, 5), 0)
 
@@ -241,7 +159,7 @@ def detect_card(img: np.ndarray, aspect: float = CARD_ASPECT,
             ar = long_side / short_side
             if abs(ar - aspect) > tol:
                 continue
-            # how well does the contour fill its own rectangle?
+
             fill = area / (w * h + 1e-6)
             if fill < 0.72:
                 continue
@@ -253,10 +171,7 @@ def detect_card(img: np.ndarray, aspect: float = CARD_ASPECT,
                 best_score = score
     return best
 
-
 def _edge_masks(gray: np.ndarray):
-    """A few plausible binary masks: Canny on the raw image, plus Otsu in both
-    polarities. The card may be brighter or darker than its background."""
     edges = cv2.Canny(gray, 40, 120)
     edges = cv2.dilate(edges, np.ones((3, 3), np.uint8), iterations=2)
     _, otsu = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
@@ -265,26 +180,11 @@ def _edge_masks(gray: np.ndarray):
     yield otsu
     yield cv2.bitwise_not(otsu)
 
-
 def mm_per_px_from_reference(ref_path: str | Path, ref_mm: float,
                              background: str | Path | None = None,
                              axis: str = "long",
                              roi: tuple[int, int, int, int] | None = None,
                              mode: str = "auto") -> tuple[float, dict]:
-    """A4 (or any rectangle of known size) shot alone at the same camera
-    distance. Its size in pixels gives mm/px directly.
-
-    mode="auto": treat it as an ID-1 card when ref_mm looks like a card size,
-                 otherwise use the plain bounding box. This matters because an
-                 A4 sheet has aspect 1.414, which is close enough to a card's
-                 1.586 to be mis-detected as one -- and then the scale is wrong.
-    mode="card": use the known ID-1 aspect ratio (robust to clutter).
-    mode="bbox": largest blob / background subtraction (needs a clean shot).
-
-    NOTE: the reference frame has its own background. Do not feed it the cup's
-    background frame -- a mismatched background turns the difference image into
-    "everything changed" and the bounding box becomes the whole image.
-    """
     if mode == "auto":
         mode = "card" if 80.0 <= ref_mm <= 92.0 else "bbox"
 
@@ -309,11 +209,11 @@ def mm_per_px_from_reference(ref_path: str | Path, ref_mm: float,
         diag.update({"card_long_px": round(long_px, 2),
                      "card_short_px": round(short_px, 2),
                      "ratio": round(long_px / max(short_px, 1e-9), 4)})
-        long_mm, short_mm = (ref_mm, ref_mm * 53.98 / 85.6) \
+        long_mm, short_mm = (ref_mm, ref_mm * 53.98 / 85.6)\
             if axis == "long" else (ref_mm * 85.6 / 53.98, ref_mm)
         diag["long_mm"] = round(long_mm, 2)
         diag["short_mm"] = round(short_mm, 2)
-        # two independent estimates of the same scale -- they must agree
+
         s_long = long_mm / long_px
         s_short = short_mm / short_px
         diag["mm_per_px_from_long"] = round(s_long, 6)
@@ -341,33 +241,18 @@ def mm_per_px_from_reference(ref_path: str | Path, ref_mm: float,
     diag = {"ref_px_height": h, "ref_px_width": w, "axis": axis, "ref_mm": ref_mm}
     return ref_mm / extent, diag
 
-
 def cut_base_contact(rows, left, right, min_jump: float = 5.0,
                      search: float = 0.12):
-    """Remove the contact shadow under the base.
-
-    The cup stands on a surface, so the silhouette fades into a shadow that is
-    widest at the object and tapers away. That tail is not the cup, but it makes
-    the object look taller, which corrupts the height and -- when the height is
-    the scale anchor -- the diameter too.
-
-    Detect it by its EDGE, not by an absolute width: scanning upward from the
-    bottom, the shadow grows fast (several px per row), and the base is where
-    that fast growth stops. Using a fraction of the global width would wrongly
-    trim a tapered object, whose base is legitimately its narrowest part.
-
-    The top is left alone: the lid is in free air, and its dome is real shape.
-    """
     w = (right - left + 1).astype(np.float64)
     n = len(w)
     if n < 12:
         return rows, left, right
     start = max(1, int(n * (1.0 - search)))
-    jumps = np.diff(w)                      # jumps[i] = w[i+1] - w[i]
+    jumps = np.diff(w)
     idx = np.arange(start, n - 1)
     if idx.size == 0:
         return rows, left, right
-    strong = idx[jumps[idx] > min_jump]     # fast widening -> inside the shadow
+    strong = idx[jumps[idx] > min_jump]
     if strong.size == 0:
         return rows, left, right
     base = int(strong.max()) + 1
@@ -375,16 +260,7 @@ def cut_base_contact(rows, left, right, min_jump: float = 5.0,
         return rows, left, right
     return rows[:base + 1], left[:base + 1], right[:base + 1]
 
-
 def fix_bad_rows(r, rel: float = 0.6):
-    """Repair rows whose width collapsed (shadow at the base, the rim's bevel,
-    a sliver of background leaking in).
-
-    Fixing beats trimming: dropping the top/bottom rows would cost ~2% of the
-    height and ~4% of the volume, which is exactly the error we are trying to
-    measure. Instead, rows narrower than rel*median are replaced by their
-    nearest reliable neighbour.
-    """
     r = np.asarray(r, dtype=np.float64).copy()
     if r.size == 0:
         return r
@@ -398,23 +274,16 @@ def fix_bad_rows(r, rel: float = 0.6):
     r[bad] = np.interp(np.where(bad)[0], good_idx, r[good_idx])
     return r
 
-
 def band_diameter(z, r, band: float = 0.05, where: str = "top") -> float:
-    """Median diameter over a band of rows, not a single extreme row."""
     n = len(z)
     k = max(1, int(n * band))
     seg = r[n - k:] if where == "top" else r[:k]
     return float(2.0 * np.median(seg))
 
-
-# --------------------------------------------------------------------------
-# Report
-# --------------------------------------------------------------------------
 def pct_err(val, ref):
     if ref is None or val is None or ref == 0:
         return None
     return 100.0 * (val - ref) / ref
-
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Cup_Practice Day 1: photo -> volume -> density")
@@ -458,8 +327,6 @@ def main() -> int:
     roi = parse_roi(args.roi)
     ref_roi = parse_roi(args.ref_roi)
 
-    # --- segment -----------------------------------------------------------
-    # The mask comes first now: anchoring on height needs the pixel height.
     img = imread_u(img_path)
     bg = imread_u(args.background) if args.background else None
     if bg is not None and bg.shape != img.shape:
@@ -475,7 +342,6 @@ def main() -> int:
     rows, left, right = cut_base_contact(rows, left, right)
     height_px = float(rows.max() - rows.min() + 1)
 
-    # --- scale -------------------------------------------------------------
     scale_diag = {}
     if args.anchor == "height":
         if args.height is None:
@@ -501,7 +367,6 @@ def main() -> int:
     z, r = mask_to_profile_mm(rows, left, right, mm_per_px)
     r = fix_bad_rows(r, rel=0.6)
 
-    # --- fits --------------------------------------------------------------
     a, b, rms_fr = fit_frustum(z, r)
     spl, rms_sp = fit_spline(z, r)
 
@@ -510,10 +375,7 @@ def main() -> int:
     rr_fr = a * zz + b
 
     H_meas = float(z.max() - z.min())
-    # "max diameter" is the widest part of the whole silhouette (the body of a
-    # thermos, the rim of a tapered mug). A top-band measurement would report
-    # the lid, which is a different number and should not be compared to a
-    # ruler reading taken across the body.
+
     max_meas = 2.0 * float(np.percentile(r, 95))
     rim_meas = band_diameter(z, r, band=0.05, where="top")
     base_meas = band_diameter(z, r, band=0.05, where="bottom")
@@ -521,14 +383,12 @@ def main() -> int:
     V_spl = volume_of_revolution(zz, rr_spl)
     V_fr = volume_of_revolution(zz, rr_fr)
 
-    # --- density -----------------------------------------------------------
     density = None
     if args.capacity is not None and args.mass is not None:
         material_ml = V_spl - args.capacity
         if material_ml > 0:
             density = float(args.mass / material_ml)
 
-    # --- checks ------------------------------------------------------------
     checks = []
 
     def add(name, value, ref, tol_pct, unit, higher_is_worse=True):
@@ -547,9 +407,6 @@ def main() -> int:
     add("max_diameter", max_meas, args.rim, 4.0, "mm")
     add("base_diameter", base_meas, args.base, 6.0, "mm")
 
-    # The exterior envelope CANNOT be compared against the capacity: they are
-    # different quantities (solid body vs cavity). The only valid check is that
-    # the envelope is larger, which fails loudly when the scale is wrong.
     if args.capacity is not None:
         material_ml = V_spl - args.capacity
         checks.append({
@@ -578,7 +435,6 @@ def main() -> int:
                        "err_pct": None, "tol_pct": None, "unit": "g/cm3",
                        "status": note})
 
-    # --- write artifacts ---------------------------------------------------
     imwrite_u(out_dir / f"{args.tag}_mask.png", mask)
 
     overlay = img.copy()
@@ -606,7 +462,7 @@ def main() -> int:
         fig.tight_layout()
         fig.savefig(out_dir / f"{args.tag}_profile.png", dpi=140)
         plt.close(fig)
-    except Exception as exc:  # plotting is optional
+    except Exception as exc:
         print(f"[warn] profile plot skipped: {exc}")
 
     report = {
@@ -637,7 +493,6 @@ def main() -> int:
     (out_dir / f"{args.tag}_report.json").write_text(
         json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
 
-    # --- console -----------------------------------------------------------
     print(f"\ninterpreter : {sys.executable}")
     print(f"image       : {img_path}")
     print(f"scale       : {mm_per_px:.5f} mm/px  ({scale_src})")
@@ -663,7 +518,6 @@ def main() -> int:
     print(f"VERDICT: {report['verdict']}")
     print(f"artifacts: {out_dir}/{args.tag}_{{report.json,mask.png,overlay.png,profile.png}}")
     return 0 if report["verdict"] != "FAIL" else 1
-
 
 if __name__ == "__main__":
     raise SystemExit(main())
