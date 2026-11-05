@@ -53,11 +53,15 @@ Each task has a numeric acceptance criterion, so "done" is not a judgement call.
 
 ### Stage A - finish the reconstruction (this week)
 
-- [ ] **T1** fix the width formula, confirm max row width 162 px
-- [ ] **T2** scale anchoring: scale 0.369, max diameter around 59 mm
-- [ ] **T2b** explain why 59 mm disagrees with the ruler's 65 mm by 9%
-- [ ] **T3** cut the contact shadow: row span 577 to 523
-- [ ] **T4** spline fit and volume integration: V around 626 ml
+- [x] **T1** mask extraction, max row width 162 px (expected 163)
+- [x] **T2** scale anchoring: scale 0.36915, max diameter 59.06 mm
+- [x] **T2b** quantified the 9%: it is an equipment limit, not a bug. The base
+  cut that made the diameter match the ruler was tuned against that same ruler,
+  so it was circular. Reported a bound instead of a number. See `DAY2_LOG.md`.
+- [~] **T3** contact-shadow cut: **not pursued.** The shadow is as wide as the
+  cup, so there is no edge to detect; every rule I tried was fitting noise.
+- [ ] **T4** spline fit and volume integration, with the scale carried as a
+  parameter and the 9% propagated into the volume
 - [ ] **T5** revolve into a mesh: watertight, volume within 0.5% of the integral
 - [ ] **T6** hand-written IoU / mIoU: reproduce 0.375 from 0.319 / 0.588 / 0.219
 

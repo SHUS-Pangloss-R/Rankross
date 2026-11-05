@@ -64,9 +64,15 @@ ruler height, and the two diameters are the independent check.
 | Capacity | not measured (no jug) | - | - |
 | Material density | cannot be derived without capacity | - | - |
 
-**Verdict: PASS.** Three independent readings agree within 1.2%, and the spline
-and frustum volumes agree within 0.3%, which is what a nearly straight-walled
-thermos should do. See [DAY1_LOG.md](DAY1_LOG.md).
+**Verdict: PASS, with a correction.** Three readings agreed within 1.2% and the
+spline and frustum volumes within 0.3%. See [DAY1_LOG.md](DAY1_LOG.md).
+
+**Correction from Day 2.** Those numbers came from a pipeline in which the base
+cut was tuned until the diameter matched the ruler, which makes the check
+circular. Measured without that tuning, the diameter is **59.06 mm, 9% short**,
+and a single hand-held photo cannot separate "scale is wrong" from "base position
+is wrong". The honest statement is a bound, not a number. See
+[DAY2_LOG.md](DAY2_LOG.md).
 
 ##  Environment & Dependencies
 
@@ -78,11 +84,16 @@ thermos should do. See [DAY1_LOG.md](DAY1_LOG.md).
 
 ##  File Descriptions
 
-- `cup_00_measure.py`: ruler and water-jug ground truth into `ground_truth.json`.
-- `cup_01_calibrate.py`: checkerboard intrinsics + distortion, saved to `camera.json`.
-- `cup_02_silhouette.py`: background subtraction, width-per-scanline extraction.
-- `cup_03_profile_fit.py`: fit $r(z)$, integrate volume, run the density sanity check.
-- `cup_04_revolve.py`: profile -> point cloud -> `.pt` cache for the segmentation track.
+- `cup_day1.py`: the Day-1 pipeline. Mask from background difference, per-row
+  edges, contact-shadow cut, spline fit, volume, and the pass/fail report.
+- `Day2_revolve.ipynb`: profile -> watertight mesh -> labelled point cloud.
+- `Day3_segment.ipynb`: segmentation head, tilt ablation, permutation and
+  batch-coupling tests.
+- `T0_normal_estimation.ipynb`: own implementation, plane normals by PCA.
+- `T1_mask.ipynb`: own implementation, silhouette extraction.
+- `PRIMER.md`, `PRIMER_线代.md`: the theory notes this project is built on.
+- `DAY1_LOG.md`, `DAY2_LOG.md`, `DAY3_LOG.md`: what worked, what failed, and why.
+- `shots/`: the two photos (cup present, cup absent).
 
 ##  What this project is really testing
 
