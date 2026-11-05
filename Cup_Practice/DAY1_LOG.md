@@ -40,11 +40,27 @@ V spline   : 626.54 ml
 V frustum  : 624.52 ml
 ```
 
-| Check | Photo-derived | Ruler | Error | |
+| Check | Photo-derived | Ruler | Error | Status |
 | :--- | ---: | ---: | ---: | :--- |
-| Height | 212.59 mm | 213 mm | -0.19% | PASS |
-| Max diameter | 65.16 mm | 65 mm | +0.25% | PASS |
-| Base diameter | 61.29 mm | 62 mm | -1.14% | PASS |
+| Height | 212.59 mm | 213 mm | -0.19% | **circular** |
+| Max diameter | 65.16 mm | 65 mm | +0.25% | depends on the cut |
+| Base diameter | 61.29 mm | 62 mm | -1.14% | depends on the cut |
+
+**Correction (added on Day 2, after the check was re-examined).** These three are
+not independent readings, and the PASS labels they originally carried were wrong.
+
+- The height error is an identity: `scale = 213 / 523`, so `523 x scale = 213` for
+  any data. It cannot fail.
+- Both diameters are multiplied by the same `scale`, and `scale` depends on where
+  the base row is placed. At 523 rows the diameter is 65.16; at 577 rows it is
+  59.06. The value 523 was the one the rule happened to return, and I accepted it
+  because the result matched. That is selection by outcome, not a test.
+- The only scale-free check is the **ratio** of the two widths:
+  `160 / 150.5 = 1.063` against the ruler's `65 / 62 = 1.048`, agreeing to 1.4%.
+  That is a real check, and it tests the *shape*, not the size.
+
+So the honest statement for this table is: shape consistent to 1.4%, absolute
+scale unverified. See `DAY2_LOG.md` for why a single photo cannot resolve it.
 
 ##  Analysis: three bugs, and what caught each
 
@@ -63,34 +79,45 @@ thing, a number disagreeing with another number.
    changes the answer without crashing.
 
 3. **The contact shadow was being read as part of the cup.** The cup stands on a
-   book, so its silhouette fades into a shadow that tapers over ~54 rows. That
-   made the object look 22 mm taller, and because the height is the scale anchor,
-   it also inflated the diameter. Fixed by detecting the base edge as the point
-   where the width stops growing fast, rather than by any fraction of the global
-   width. A fraction rule was tried first and it wrongly trimmed the synthetic
-   frustum, whose base is legitimately its narrowest part.
+   book, so its silhouette fades into a shadow. First attempt: detect the base as
+   the point where the width stops growing fast. That gave 523 rows and a diameter
+   matching the ruler, so I called it fixed.
 
-Diagnostic that nailed it: the silhouette's aspect ratio was 577/163 = 3.54,
+   **It was not fixed.** On Day 2 I went back to the width profile: the largest
+   sudden widening in the bottom 12% is at row index 521 (`152 -> 158`), which is
+   the printed pattern on the cup, not the base. The rule hit noise and produced a
+   number I then accepted. A fraction-of-global-width rule was also tried and it
+   wrongly trimmed the synthetic frustum, whose base is legitimately its narrowest
+   part.
+
+Diagnostic that started this: the silhouette's aspect ratio was 577/163 = 3.54,
 while the ruler's was 213/65 = 3.28. The 8% gap could not be explained by
 perspective (perspective shrinks height, it does not stretch it), so it had to be
-extra rows in the mask. After the fix the ratio is 523/160 = 3.27.
+extra rows in the mask. What Day 1 did not establish was **which** extra rows to
+remove; 523/160 = 3.27 matches the ruler by construction once 523 is chosen.
 
 ##  Conclusion
 
-**The `silhouette = profile` assumption holds for this object.** Three
-independent measurements agree within 1.2%, and the two volumes (spline and
-frustum) agree within 0.3%, which is what a nearly-straight-walled thermos
-should do.
+**The `silhouette = profile` assumption holds for this object. The absolute scale
+does not follow from it.** The scale-free check, the ratio of max to base width,
+agrees to 1.4%; the spline and frustum volumes agree within 0.3%. Everything that
+depends on *where the base row is* is unverified, and Day 2 showed the size of
+that hole: 9% on the diameter, with no way to close it from one photo.
 
 What I actually learned from this step, in order of surprise:
 
 - **The bug that hurts is the one that does not crash.** Opening the mask was a
   one-line cosmetic cleanup; it cost 4.4% of the diameter.
 - **Two measurements beat one, always.** Every failure above was found because
-  two independent numbers were compared, never because a picture looked wrong.
+  two numbers were compared, never because a picture looked wrong.
+- **A matching number is not automatically a check.** I had three numbers that
+  agreed and only one of them carried information, because the other two shared a
+  parameter I had quietly chosen. The rule I now use: before quoting an agreement,
+  ask which quantity both sides computed *without* the fitted parameter.
 - **The anchor is a choice, not a fact.** Anchoring on height makes the height
-  check trivially true and pushes the error into the diameters. That is fine only
-  because the diameters are independent readings.
+  check trivially true and pushes all the error into the diameters. That would be
+  acceptable only if the diameters were independent of the anchor, and they are
+  not: both depend on where the base row is placed.
 
 ##  Open issues
 
