@@ -60,8 +60,10 @@ Each task has a numeric acceptance criterion, so "done" is not a judgement call.
   so it was circular. Reported a bound instead of a number. See `DAY2_LOG.md`.
 - [~] **T3** contact-shadow cut: **not pursued.** The shadow is as wide as the
   cup, so there is no edge to detect; every rule I tried was fitting noise.
-- [ ] **T4** spline fit and volume integration, with the scale carried as a
-  parameter and the 9% propagated into the volume
+- [ ] **T4** volume integration on the 558-row profile: smooth fit, then
+  $V=\pi\int r^2 dz$. Acceptance: synthetic cylinder matches $\pi r^2h$
+  within 0.5%; spline rms near 0.15 mm; real volume reported at $s=0.38172$
+  with the +-7% scale carried through to +-22% on volume
 - [ ] **T5** revolve into a mesh: watertight, volume within 0.5% of the integral
 - [ ] **T6** hand-written IoU / mIoU: reproduce 0.375 from 0.319 / 0.588 / 0.219
 

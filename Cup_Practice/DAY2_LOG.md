@@ -80,15 +80,49 @@ The two disagree by 9.4%. **One hand-held photo cannot say which is right.**
 
 The shadow term alone spans the entire 9%. So the data is **consistent** with the
 ruler being right, and equally consistent with it being wrong. That is the whole
-of what I can say.
+of what I can say from the numbers alone.
+
+##  Refinement: where the 9% actually comes from
+
+Plotting $r(z)$ at the bottom settled what the numbers alone could not. The shadow
+tail runs from $z=0$ to about $z=7$ mm only -- **19 rows, not 54**. Above that the
+profile is vertical to within the pattern jitter.
+
+Cutting the tail leaves **558 rows**, and with the ruler height as the anchor:
+
+$$s = \frac{213}{558} = 0.38172$$
+
+| Quantity | With 558 rows | Ruler | Error |
+| :--- | ---: | ---: | ---: |
+| Max diameter | 61.1 | 65 | -6.0% |
+| Base diameter | 57.3 | 62 | -7.6% |
+
+**Both diameters come out short, by a similar amount, in the same direction.** A
+shape error would not do that -- it would move one and leave the other. So this is
+a scale error, and it lives in the `213`.
+
+Solving for the height that makes both diameters match:
+
+$$H = 558 \times \frac{65}{160} = 227\ \text{mm}$$
+
+At 227 mm the diameters become 65.1 and 61.0, i.e. +0.1% and -1.6%. **The 213 mm
+ruler reading is most likely about 6% short** -- easy to do when holding a card
+against a curved wall with one hand.
+
+**Accepted rather than chased.** Re-measuring cannot reliably do better than this,
+and the target tasks do not need better. What is carried forward:
+
+- linear size: **±7%**
+- volume: about **±22%**, since $V \propto s^3$
 
 ##  Conclusion
 
-**The 9% is an equipment limit, not a bug.** Reporting a single number here would
-be false precision. The honest statement is:
+**The 9% is a measurement limit, not a bug in the pipeline.** Reporting a single
+number here would be false precision. The honest statement is:
 
-> maximum diameter 59 mm, with 9% unresolved between "scale is wrong" and "base
-> position is wrong".
+> maximum diameter 61 mm at the 213 mm anchor, with ±7% on any linear size and
+> ±22% on volume; the shortfall is consistent with the height reading being ~6%
+> short.
 
 And a correction to Day 1: the 65.16 mm reported in `DAY1_LOG.md` came from a
 pipeline whose base cut was tuned against the same ruler reading, so that check
@@ -102,12 +136,35 @@ global scale factor:
 
 | Task | Needs a correct absolute scale? |
 | :--- | :--- |
-| T4 volume integral | yes (volume scales as $s^3$, so 9% becomes 27%) |
+| T4 volume integral | yes (volume scales as $s^3$, so 7% becomes 22%) |
 | T5 revolve to mesh | **no**, shape is what matters |
 | T7 normals / FPFH | **no**, local relative quantities |
 | T8 Kabsch registration | **no**, rotation and translation are scale-free |
 
-So the plan is to carry the scale as a parameter and continue with T5.
+So the plan is to carry the scale as a parameter and continue with T4 and T5.
+
+##  T4: what the integrator has to satisfy
+
+The volume comes from the 558-row profile, after the 19-row tail is removed.
+
+**Build**
+
+1. Fit a smooth curve through the noisy profile, so that the ±3.5% jitter is not
+   squared and amplified.
+2. Integrate $V = \pi \int r(z)^2\,dz$ over that curve.
+
+**Acceptance**
+
+| Check | Criterion | Why |
+| :--- | :--- | :--- |
+| Integrator on a known shape | synthetic cylinder $r=30$, $h=100$; integral matches $\pi r^2 h = 282743$ within **0.5%** | scale-free check of the maths |
+| Spline quality | residual rms around **0.15 mm** | below the jitter, above the noise |
+| Volume on the real profile | report at $s=0.38172$, **with the ±7% scale carried into it** | the number is only as good as the anchor |
+| Propagation | $V$ scales as $s^3$: 7% linear becomes **±22%** on volume | this is the honest width of the answer |
+
+The synthetic-cylinder test is the one that matters. It is the only check here
+that does not depend on the ruler at all, so if that one passes and the real
+number looks odd, the oddness is in the data, not in the code.
 
 ##  Open issues
 
