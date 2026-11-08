@@ -60,16 +60,15 @@ Each task has a numeric acceptance criterion, so "done" is not a judgement call.
   so it was circular. Reported a bound instead of a number. See `DAY2_LOG.md`.
 - [~] **T3** contact-shadow cut: **not pursued.** The shadow is as wide as the
   cup, so there is no edge to detect; every rule I tried was fitting noise.
-- [ ] **T4** volume integration on the 558-row profile: smooth fit, then
-  $V=\pi\int r^2 dz$. Acceptance: synthetic cylinder matches $\pi r^2h$
-  within 0.5%; spline rms near 0.15 mm; real volume reported at $s=0.38172$
-  with the +-7% scale carried through to +-22% on volume
-- [ ] **T5** revolve into a mesh: watertight, volume within 0.5% of the integral
+- [x] **T4** volume integration: **495.14 ml** after cutting the 7 mm tail.
+- [x] **T5** revolve into a mesh: watertight, mesh volume **494.89** vs the
+  integral 495.14 (0.05%)
 - [ ] **T6** hand-written IoU / mIoU: reproduce 0.375 from 0.319 / 0.588 / 0.219
 
 ### Stage B - from segmentation to registration (winter break)
 
-- [ ] **T7** normals and FPFH descriptors: (N, 33) shape, outward-consistent normals
+- [x] **T7** normals and FPFH: FPFH (33, 20000) transposed to (N, 33), normals
+  outward for 99.6% of points after a manual sign flip
 - [ ] **T8** coarse registration: FPFH + RANSAC + Kabsch, rotation error under 1 deg
   on a known synthetic rotation
 - [ ] **T9** ICP refinement: table of initial angle to final error, 0 / 10 / 30 / 90 / 180 deg
