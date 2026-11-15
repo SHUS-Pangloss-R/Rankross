@@ -74,6 +74,54 @@ and a single hand-held photo cannot separate "scale is wrong" from "base positio
 is wrong". The honest statement is a bound, not a number. See
 [DAY2_LOG.md](DAY2_LOG.md).
 
+##  Four bugs that did not crash
+
+Every serious bug in this project produced a **wrong number instead of an error**.
+
+| Bug | What it looked like | How it was caught |
+| :--- | :--- | :--- |
+| Opening the mask with a 9x9 kernel | body width 163 -> 153 px | diameter 4.4% short against the ruler |
+| A4 sheet matched as a campus card | every length 10% short | two independent scale estimates disagreed |
+| `width = [r-1+1 ...]` instead of `r-l+1` | "width" was actually the right edge coordinate | the number stopped being a width |
+| `pcd2.points` never assigned the transformed array | registration error 61.7 deg on a cloud that had never moved | the two clouds' centroids should have differed by `t_gt` and did not |
+
+The last one is why T8 had to be rebuilt. `P2` held the transformed points, `pcd2`
+still held the original, and every downstream number was computed against a target
+that had never moved. **Nothing raised an exception.**
+
+What the four have in common: none fails loudly, and each was found by comparing
+two numbers that should have agreed -- never by looking at a picture.
+
+After the fix the registration numbers changed completely: coarse registration
+gave 23.07 deg against the ground truth with a 1.39 mm translation error, and ICP
+brought the translation to 0.028 mm while the rotation stayed near 23 deg. That
+remaining angle is not an error -- see below.
+
+##  What the registration actually shows
+
+The object is a surface of revolution, so rotation about its own axis is not
+observable. A 23 deg discrepancy with a 0.03 mm translation error is the signature
+of that, not of a failed algorithm.
+
+| Quantity | Value | Identifiable? |
+| :--- | ---: | :--- |
+| Translation error after ICP | 0.028 mm | yes |
+| Inlier ratio | 99.59% | yes |
+| RMSE | 0.91 mm | yes |
+| Rotation about the cup's own axis | ~23 deg | **no** |
+
+ICP convergence, from an initial error of delta about the horizontal axis:
+
+| delta | final rotation error | inlier ratio | verdict |
+| ---: | ---: | ---: | :--- |
+| 0 deg | 0.57 deg | 100.00% | converged |
+| 10 deg | 8.39 deg | 100.00% | converged |
+| 30 deg | 41.72 deg | 30.19% | failed |
+| 90 deg | 153.97 deg | 8.40% | failed |
+| 180 deg | 180.00 deg | 0.00% | failed |
+
+**The basin of convergence is somewhere between 10 and 30 degrees.**
+
 ##  Environment & Dependencies
 
 - Python 3.11

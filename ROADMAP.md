@@ -69,14 +69,16 @@ Each task has a numeric acceptance criterion, so "done" is not a judgement call.
 
 - [x] **T7** normals and FPFH: FPFH (33, 20000) transposed to (N, 33), normals
   outward for 99.6% of points after a manual sign flip
-- [x] **T8** coarse registration: FPFH + RANSAC. Raw rotation error was 61.7 deg, but
-  fitness 99.46% and RMSE 0.87 mm showed the alignment was correct -- the object is a
-  surface of revolution, so rotation about its own axis is unidentifiable. Comparing
-  **axis direction** instead of the full matrix gives **0.0 deg**.
-- [ ] **T9** ICP refinement: table of initial angle to final error, 0 / 10 / 30 / 90 / 180 deg
-- [ ] **T10** quantify the symmetry ambiguity: at which initial angles does ICP land
-  on the wrong symmetric solution?
-
+- [x] **T8** coarse registration: FPFH + RANSAC. After fixing the `pcd2` assignment bug,
+  **23.07 deg** rotation error and **1.39 mm** translation error. The residual angle is
+  the unobservable spin about the cup's own axis, not an algorithm failure.
+- [x] **T9** ICP refinement: converged at 0 and 10 deg (100% inliers, 0.91 mm RMSE),
+  failed at 30 / 90 / 180 deg (30% / 8% / 0%). **Basin of convergence is between
+  10 and 30 deg.** ICP reached 0.028 mm translation while keeping the ~23 deg spin.
+- [x] **T10** symmetry ambiguity quantified: translation and axis are identifiable
+  (0.03 mm, 0 deg), the spin about the cup axis is not. Recorded as a table in the
+  README, since it is the whole point of working with a solid of revolution.
+- [ ] 
 ### Stage C - read and reproduce (spring)
 
 - [ ] Read GeoTransformer and RoReg, write notes in the same format as the PointNet notes
