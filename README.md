@@ -26,6 +26,10 @@ This is my personal repository to document my learning progress and hands-on pro
 | 2026-10-31 | Cup_Practice (Day 2) | Spline profile, surface of revolution, watertight mesh, labelled point cloud | mesh volume vs analytic: -0.06% | - |
 | 2026-10-31 | Cup_Practice (Day 3) | Tilt ablation, z-only baseline, permutation / batch-coupling unit tests | mIoU drop 62.3% (no aug) vs 0.5% (aug) | - |
 | 2026-10-31 | Cup_Practice (T0/T1) | Own implementation of the PCA variance identity and of mask extraction | max row width 162 px vs 163 expected | - |
+| 2026-11-07 | Cup_Practice (T2-T5) | Scale anchoring, spline profile, volume integration, surface of revolution mesh | V 495.14 ml, mesh 494.89 (-0.05%) | - |
+| 2026-11-08 | Cup_Practice (T7) | Normal estimation, outward sign fix, FPFH descriptors | outward 99.6%, FPFH (33, 20000) | - |
+| 2026-11-08 | Cup_Practice (T8-T9) | FPFH + RANSAC coarse registration, ICP refinement, symmetry-limited metric | RANSAC 23.07 deg, ICP 0.028 mm, basin 10-30 deg | - |
+| 2026-11-08 | Cup_Practice (T10) | Separated what is identifiable about a pose from what is not | spin about the axis is unobservable | - |
 
 > *Note: The local cross-validation score is often slightly higher than the Kaggle leaderboard score, as the test set may contain out-of-distribution samples.*
 

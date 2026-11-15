@@ -35,7 +35,7 @@ Cup_Practice is the first 3D project where I know the right answer in advance.
 Three measurements agreeing to 1.2% carry more information than 100% accuracy on
 three meshes.
 
-## 3. Where I am now (2026-11-01)
+## 3. Where I am now (2026-11-08)
 
 | Item | Result | Evidence |
 | :--- | :--- | :--- |
@@ -46,12 +46,17 @@ three meshes.
 | T0: PCA variance identity | own implementation | `Cup_Practice/T0_normal_estimation.ipynb` |
 | T0b: normal estimation on a plane | 0.04 deg at sigma=0.05, 0.24 deg at sigma=0.5 | same |
 | T1: mask extraction | max row width 162 px vs 163 expected | `Cup_Practice/T1_mask.ipynb` |
+| T2-T5: scale, profile, volume, mesh | V 495.14 ml, mesh 494.89 (0.05%) | `Cup_Practice/T2-T5_profile_volume_mesh.ipynb` |
+| T7: normals + FPFH | outward 99.6%, FPFH (33, 20000) | `Cup_Practice/T8-T9_registration.ipynb` |
+| T8: coarse registration | 23.07 deg / 1.39 mm; residual is the unobservable spin | same |
+| T9: ICP convergence | 0.028 mm translation; basin of convergence 10-30 deg | same |
+| T10: symmetry split | that which is identifiable vs not, stated explicitly | `Cup_Practice/README.md` |
 
 ## 4. Where I am going
 
 Each task has a numeric acceptance criterion, so "done" is not a judgement call.
 
-### Stage A - finish the reconstruction (this week)
+### Stage A - finish the reconstruction (planned: one week -- **done 2026-11-07**)
 
 - [x] **T1** mask extraction, max row width 162 px (expected 163)
 - [x] **T2** scale anchoring: scale 0.36915, max diameter 59.06 mm
@@ -65,7 +70,7 @@ Each task has a numeric acceptance criterion, so "done" is not a judgement call.
   integral 495.14 (0.05%)
 - [ ] **T6** hand-written IoU / mIoU: reproduce 0.375 from 0.319 / 0.588 / 0.219
 
-### Stage B - from segmentation to registration (winter break)
+### Stage B - from segmentation to registration (planned: winter break -- **done 2026-11-08, about two months early**)
 
 - [x] **T7** normals and FPFH: FPFH (33, 20000) transposed to (N, 33), normals
   outward for 99.6% of points after a manual sign flip
@@ -78,8 +83,7 @@ Each task has a numeric acceptance criterion, so "done" is not a judgement call.
 - [x] **T10** symmetry ambiguity quantified: translation and axis are identifiable
   (0.03 mm, 0 deg), the spin about the cup axis is not. Recorded as a table in the
   README, since it is the whole point of working with a solid of revolution.
-- [ ] 
-### Stage C - read and reproduce (spring)
+### Stage C - read and reproduce (planned: spring -- **starting 2026-11-09**)
 
 - [ ] Read GeoTransformer and RoReg, write notes in the same format as the PointNet notes
 - [ ] Reproduce one module of one of them on my own data
@@ -102,4 +106,6 @@ matrix from correspondences means memorising rather than understanding.
 
 - A box is checked only when the acceptance number is met on my own data.
 - When something fails, the failure goes into a `DAY*_LOG.md`, not into silence.
-- Dates are real; if a stage takes three months, the dates will say so.
+- Dates are real. Stage A and B were both planned a month or more out and finished
+  within a week of each other; that is recorded above rather than left as a plan
+  that quietly went stale.
