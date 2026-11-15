@@ -76,6 +76,8 @@ is wrong". The honest statement is a bound, not a number. See
 
 ##  Four bugs that did not crash
 
+> The complete chronological list is in **[../MISTAKES.md](../MISTAKES.md)**. The four below are the ones that happened inside this project.
+
 Every serious bug in this project produced a **wrong number instead of an error**.
 
 | Bug | What it looked like | How it was caught |
